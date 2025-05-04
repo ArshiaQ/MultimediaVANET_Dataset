@@ -1,0 +1,5 @@
+parameter,mean,std,unit
+throughput,50,3,Mbps
+e2e_delay,10,2,ms
+jitter,1,0.2,ms
+packet_loss,0.5,0.2,%
