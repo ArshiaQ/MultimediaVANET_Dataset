@@ -11,19 +11,23 @@ def load_and_label():
         full_path = os.path.join(DATA_DIR, rsu_folder)
         if not os.path.isdir(full_path):
             continue
-        if not rsu_folder.startswith("RSU_"):
+
+        # Attempt to extract RSU ID from folder name
+        rsu_id = None
+        if rsu_folder.startswith("RSU_"):
+            rsu_id_str = rsu_folder.split("_")[1]
+        elif rsu_folder.startswith("RSU-"):
+            rsu_id_str = rsu_folder.split("-")[1]
+        else:
             print(f"Skipping folder '{rsu_folder}' as it doesn't match the expected pattern.")
             continue
-        rsu_parts = rsu_folder.split("_")
-        if len(rsu_parts) < 2:
-            print(f"Skipping folder '{rsu_folder}' due to unexpected naming format.")
-            continue
-        rsu_id_str = rsu_parts[1]
+
         try:
             rsu_id = int(rsu_id_str)
         except ValueError:
             print(f"Warning: Unable to convert RSU ID '{rsu_id_str}' to integer. Skipping folder: {rsu_folder}")
             continue
+
         for csv_file in glob.glob(os.path.join(full_path, "run_*.csv")):
             run_filename = os.path.basename(csv_file)
             run_parts = run_filename.split("_")
@@ -43,7 +47,7 @@ def load_and_label():
     if dfs:
         return pd.concat(dfs, ignore_index=True)
     else:
-        return pd.DataFrame()
+        return pd.DataFrame()  # Return an empty DataFrame if no valid data was found
 
 def main():
     combined = load_and_label()
